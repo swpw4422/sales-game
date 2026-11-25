@@ -35,9 +35,11 @@ body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
 #find{position:fixed;left:0;right:0;top:46%;text-align:center;font-weight:700;font-size:20px;text-shadow:0 2px 6px #000;z-index:6;display:none}
 #toast{position:fixed;left:12px;right:12px;bottom:20px;background:#000c;padding:10px;border-radius:12px;text-align:center;z-index:9;display:none}
 .alt{background:#ffffff26;color:#fff}
+#warn{display:none;background:#92400e;border-radius:14px;padding:12px;margin:0 0 12px;font-size:15px;line-height:1.4}#warn button{margin-top:8px;padding:10px;font-size:16px;background:#fff;color:#92400e}
 </style></head><body><video id="v" playsinline muted></video><canvas id="cv"></canvas><div id="find">🖐️ กำลังหามือของคุณ...</div><div id="toast"></div>
 <div id="app">
 <div class="scr on" id="s0" style="justify-content:center"><h1>🎯 จับคู่ เซล – จังหวัด</h1><p class="sub">จีบนิ้วหยิบชื่อจังหวัด แล้วค้างบนเซลที่ดูแล</p>
+<div id="warn">⚠️ ตอนนี้เปิดผ่านแอปอื่น (เช่น LINE) กล้องอาจใช้ไม่ได้<br>กรุณาเปิดผ่าน <b>Chrome</b> (Android) หรือ <b>Safari</b> (iPhone) โดยกดเมนู ⋮ หรือไอคอนแชร์ แล้วเลือก "เปิดด้วยเบราว์เซอร์" หรือกดคัดลอกลิงก์ด้านล่างไปวางในเบราว์เซอร์<button id="cp">📋 คัดลอกลิงก์</button></div>
 <input id="code" placeholder="รหัสผู้เล่น" autocomplete="off"><button id="goc">📷 เริ่มเกม (เปิดกล้อง)</button><div id="err"></div></div>
 <div class="scr" id="s1"><div class="hud"><span id="sc">0</span><span id="pg"></span><span id="tm"></span></div><div id="grid"></div>
 <div id="zone"><div id="chip"></div><div id="hintTxt">จีบนิ้วหยิบ → ค้างบนเซลที่ดูแล 2 วินาที (หรือกางนิ้วเพื่อวางทันที)</div></div></div>
@@ -112,8 +114,13 @@ function draw(){const c=$("#cv"),W=innerWidth,H=innerHeight,d=devicePixelRatio||
  requestAnimationFrame(draw)}
 async function enter(useCam){$("#err").textContent="";const c=$("#code").value.trim();if(!c)return;
  try{me=await call("login",c);if(!me)return $("#err").textContent="ไม่พบรหัสผู้เล่นนี้";
-  sales=await call("getSales");if(sales.length<2)return $("#err").textContent="ไม่พบข้อมูลเซลในชีท Sales_Data";await startCam();if(!cam)return $("#err").textContent="เปิดกล้องไม่ได้ เกมนี้ต้องใช้กล้อง ลองเปิดด้วย Chrome และกดอนุญาตกล้อง";start()}
+  sales=await call("getSales");if(sales.length<2)return $("#err").textContent="ไม่พบข้อมูลเซลในชีท Sales_Data";await startCam();if(!cam)return $("#err").textContent="เปิดกล้องไม่ได้ เกมนี้ต้องใช้กล้อง กรุณาเปิดลิงก์ผ่าน Chrome (Android) หรือ Safari (iPhone) แล้วกดอนุญาตกล้อง";start()}
  catch(e){$("#err").textContent="เชื่อมต่อไม่สำเร็จ ลองใหม่"}}
 $("#goc").onclick=()=>enter(true);
+// ตรวจว่าเปิดผ่านแอป (LINE ฯลฯ) ซึ่งมักบล็อกกล้อง
+const UA=navigator.userAgent,base=location.origin+location.pathname;
+if(/Line\//i.test(UA)&&!/openExternalBrowser=1/.test(location.search))location.replace(base+"?openExternalBrowser=1");
+if(/Line\/|FBAN|FBAV|Instagram|MicroMessenger|; wv\)/i.test(UA))$("#warn").style.display="block";
+$("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(base);toast("คัดลอกลิงก์แล้ว นำไปวางใน Chrome หรือ Safari")}catch(e){prompt("คัดลอกลิงก์นี้ไปเปิดใน Chrome หรือ Safari",base)}};
 $("#again").onclick=start;
 </script></body></html>
