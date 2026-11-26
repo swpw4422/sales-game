@@ -36,8 +36,9 @@ body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
 #toast{position:fixed;left:12px;right:12px;bottom:20px;background:#000c;padding:10px;border-radius:12px;text-align:center;z-index:9;display:none}
 .alt{background:#ffffff26;color:#fff}
 #warn{display:none;background:#92400e;border-radius:14px;padding:12px;margin:0 0 12px;font-size:15px;line-height:1.4}#warn button{margin-top:8px;padding:10px;font-size:16px;background:#fff;color:#92400e}
-@keyframes sw{from{translate:-7px 0}to{translate:7px 0}}
-.f{animation:sw 1.6s ease-in-out infinite alternate;transition:transform .45s,border-color .15s,background .15s}
+@keyframes sw{from{transform:translateX(-9px) scale(1.2)}to{transform:translateX(9px) scale(1.2)}}
+.f{transition:transform .45s,border-color .15s,background .15s}
+.f img{animation:sw 1.6s ease-in-out infinite alternate}
 #load{position:fixed;inset:0;background:#000d;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:19px;line-height:1.6}
 .sp{width:54px;height:54px;border:6px solid #fff4;border-top-color:#22c55e;border-radius:50%;animation:rot 1s linear infinite;margin-bottom:18px}@keyframes rot{to{transform:rotate(360deg)}}
 #pw{margin-top:10px;text-transform:none}
@@ -67,7 +68,7 @@ function build(){const order=shuf(sales.map((_,i)=>i)),used=sales.map(()=>[]);Q=
  for(let k=0;k<N;k++){const o=order[k%order.length],pool=sales[o].prov.filter(p=>!used[o].includes(p));if(!pool.length)continue;
   const p=pool[Math.random()*pool.length|0];used[o].push(p);Q.push({p,o})}shuf(Q)}
 function start(){build();idx=score=ok=bad=0;holding=false;lock=false;t0=t1=Date.now();
- $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<img src="${s.img}" onerror="noimg(this)"><span>${esc(s.nick)}</span>`:tile(s,i)}</div>`).join("");
+ $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<img src="${s.img}" onerror="noimg(this)" style="animation-delay:-${(i*.53).toFixed(2)}s;animation-duration:${(1.4+i%3*.25).toFixed(2)}s">`:tile(s,i)}</div>`).join("");
  faces=[...document.querySelectorAll(".f")];show(1);hud();next(true);clearInterval(tick);tick=setInterval(hud,500)}
 const tile=(s,i)=>`<b style="background:hsl(${i*40},55%,40%)">${esc(s.nick)}</b>`;
 function noimg(im){const f=im.parentNode,i=+f.dataset.i;f.classList.add("n");f.innerHTML=tile(sales[i],i)}
