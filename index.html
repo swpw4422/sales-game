@@ -52,7 +52,7 @@ body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
 <div class="scr" id="s1"><div class="hud"><span id="sc">0</span><span id="pg"></span><span id="tm"></span></div><div id="grid"></div>
 <div id="zone"><div id="chip"></div></div></div>
 <div class="scr" id="s2"><h1 id="rt"></h1><p class="sub" id="rs"></p><b>🏆 อันดับสูงสุด</b><ol id="bd"></ol><button id="again">เล่นอีกครั้ง</button></div>
-<div class="scr" id="s3" style="justify-content:center"><h1>📖 กติกาการเล่น</h1><div class="rules"><p>✋ ยกมือให้เห็นในกล้อง แล้ว <b>จีบนิ้วโป้งกับนิ้วชี้</b> ที่ <b>ชื่อจังหวัด</b> เพื่อหยิบ</p><p>🎯 เลื่อนไป <b>ค้างไว้บนรูปเซล</b> ที่ดูแลจังหวัดนั้น จนวงกลมสีเหลืองวิ่งครบรอบ ถือว่าตอบ (ถ้ากางนิ้วก่อนครบ จังหวัดจะเด้งกลับ)</p><p>✅ ตอบถูก <b>+100</b> คะแนน และ <b>คิดโบนัสความเร็วทุกข้อ</b> = (15 − เวลาที่ใช้ในข้อนั้นเป็นวินาที) × 4 สูงสุดราว +50 ถ้าใช้เวลาเกิน 15 วินาทีในข้อนั้น ไม่ได้โบนัส<br>❌ ตอบผิด <b>−100</b> คะแนน และไม่มีโอกาสแก้</p><p>🔀 เซลสลับตำแหน่งและส่ายไปมาทุกข้อ รวม 10 ข้อ คะแนนเท่ากันใครเร็วกว่าอยู่สูงกว่า</p></div><button id="ok">เข้าสู่เกม</button></div>
+<div class="scr" id="s3" style="justify-content:center"><h1>📖 กติกาการเล่น</h1><div class="rules"><p>✋ ยกมือให้เห็นในกล้อง แล้ว <b>จีบนิ้วโป้งกับนิ้วชี้</b> ที่ <b>ชื่อจังหวัด</b> เพื่อหยิบ</p><p>🎯 เลื่อนไป <b>ค้างไว้บนรูปเซล</b> ที่ดูแลจังหวัดนั้น จนวงกลมสีเหลืองวิ่งครบรอบ ถือว่าตอบ (ถ้ากางนิ้วก่อนครบ จังหวัดจะเด้งกลับ)</p><p>✅ ตอบถูก <b>+100</b> คะแนน บวกโบนัสความเร็ว (ยิ่งเร็วยิ่งได้มาก)<br>❌ ตอบผิด <b>−100</b> คะแนน และไม่มีโอกาสแก้</p><p>🔀 เซลสลับตำแหน่งและส่ายไปมาทุกข้อ รวม 10 ข้อ คะแนนเท่ากันใครเร็วกว่าอยู่สูงกว่า</p></div><button id="ok">เข้าสู่เกม</button></div>
 </div>
 <script>
 const DEMO_S=[["พี่น้อย","กรุงเทพชั้นใน,นนทบุรี,ปทุมธานี,นครปฐม (อ.เมือง)"],["เต้ย","กรุงเทพรอบนอก,สมุทรสาคร,สมุทรปราการ"],["อาท","ชลบุรี,ระยอง,ตราด,กาญจนบุรี"],["เงาะ","เชียงใหม่,เชียงราย,ลำปาง,น่าน"],["เล็ก","พิษณุโลก,นครสวรรค์,อยุธยา"],["เอก","โคราช,ขอนแก่น,อุดรธานี"],["ศาล","อุบลราชธานี,สกลนคร,ร้อยเอ็ด"],["แดง","ภูเก็ต,กระบี่,สุราษฎร์ธานี"],["เกม","สงขลา,ตรัง,ยะลา"]];
@@ -99,7 +99,7 @@ async function end(){clearInterval(tick);const sec=Math.round((Date.now()-t0)/10
   $("#bd").innerHTML=b.map((r,i)=>`<li><span>${i+1}. ${esc(r.nick)}</span><span>${r.score}</span></li>`).join("")||"<li>ยังไม่มีข้อมูล</li>"}
  catch(e){$("#bd").innerHTML="<li>บันทึกคะแนนไม่สำเร็จ</li>"}}
 // ---- โหมดกล้อง: ตรวจจับมือด้วย MediaPipe Hands ----
-let cam=false,lm=null,hands,busy=false,holding=false,wasPin=false,miss=0,gx=0,gy=0,rel=0,px=0,py=0,lostAt=0,dI=-1,dT=0,loops=0;const DWELL=1300;
+let cam=false,lm=null,hands,busy=false,holding=false,wasPin=false,miss=0,gx=0,gy=0,rel=0,px=0,py=0,lostAt=0,dI=-1,dT=0,loops=0;const DWELL=1500;
 const E=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
 function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",4500)}
 const lib=src=>new Promise((ok,no)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
