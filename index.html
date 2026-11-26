@@ -13,7 +13,7 @@ button{background:#22c55e;color:#06281c;font-weight:700;font-size:20px;margin-to
 #err{color:#fecaca;text-align:center;min-height:24px;margin-top:8px}
 .hud{display:flex;justify-content:space-between;font-weight:700;font-size:17px;padding:2px 4px 8px}
 #grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.f{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#14532d;border:3px solid transparent;transition:.15s}
+.f{position:relative;aspect-ratio:7/8;box-shadow:0 4px 10px #0007;border-radius:14px;overflow:hidden;background:#14532d;border:3px solid transparent;transition:.15s}
 .f img,.f b{width:100%;height:100%;object-fit:cover;display:flex;align-items:center;justify-content:center}
 .f b{font-size:clamp(18px,6.8vw,30px);font-weight:800;text-align:center;line-height:1.1;padding:4px;text-shadow:0 2px 4px #0006}.f.n span{display:none}
 .f span{position:absolute;left:0;right:0;bottom:0;text-align:center;font-weight:700;font-size:15px;padding:12px 0 3px;background:linear-gradient(transparent,#000a)}
@@ -36,15 +36,18 @@ body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
 #toast{position:fixed;left:12px;right:12px;bottom:20px;background:#000c;padding:10px;border-radius:12px;text-align:center;z-index:9;display:none}
 .alt{background:#ffffff26;color:#fff}
 #warn{display:none;background:#92400e;border-radius:14px;padding:12px;margin:0 0 12px;font-size:15px;line-height:1.4}#warn button{margin-top:8px;padding:10px;font-size:16px;background:#fff;color:#92400e}
-@keyframes sw{from{transform:skewX(-4.5deg)}to{transform:skewX(4.5deg)}}
+@keyframes sw{from{transform:rotate(-2.5deg) skewX(2deg)}to{transform:rotate(2.5deg) skewX(-2deg)}}
 .f{transition:transform .45s,border-color .15s,background .15s}
-.f .w{position:absolute;inset:0;transform:scale(1.15)}
-.f img.t{position:absolute;inset:0;transform-origin:50% 72%;-webkit-mask-image:linear-gradient(#000 50%,transparent 80%);mask-image:linear-gradient(#000 50%,transparent 80%);animation:sw 1.6s ease-in-out infinite alternate}
+.f .w{position:absolute;inset:0;transform:scale(1.12)}
+.f img.t{position:absolute;inset:0;transform-origin:50% 72%;-webkit-mask-image:linear-gradient(#000 50%,transparent 80%);mask-image:linear-gradient(#000 50%,transparent 80%);animation:sw 1.1s ease-in-out infinite alternate}
 #load{position:fixed;inset:0;background:#000d;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:19px;line-height:1.6}
 .sp{width:54px;height:54px;border:6px solid #fff4;border-top-color:#22c55e;border-radius:50%;animation:rot 1s linear infinite;margin-bottom:18px}@keyframes rot{to{transform:rotate(360deg)}}
 #pw{margin-top:10px;text-transform:none}
 #mt{position:fixed;right:10px;bottom:12px;z-index:7;width:46px;height:46px;border-radius:50%;padding:0;margin:0;font-size:22px;background:#0008;color:#fff;display:none}body.cam #mt{display:block}
 .rules{font-size:17px;line-height:1.6}.rules p{margin:8px 0}
+.f img{opacity:0;transition:opacity .6s}.f img.l{opacity:1}
+.f.ok::after,.f.no::after{content:"✓";position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:900;color:#fff;background:#22c55e99;text-shadow:0 2px 6px #0008}
+.f.no::after{content:"✗";background:#ef444499}
 </style></head><body><video id="v" playsinline muted></video><canvas id="cv"></canvas><div id="find">🖐️ กำลังหามือของคุณ...</div><div id="toast"></div><div id="load"><div class="sp"></div>กรุณารอ 5–6 วินาที<br>กำลังเชื่อมต่อเซิร์ฟเวอร์<br>และกรุณากด <b>"อนุญาต"</b><br>ให้เข้าถึงกล้องในโทรศัพท์</div><button id="mt">🔊</button>
 <div id="app">
 <div class="scr on" id="s0" style="justify-content:center"><h1>🎯 จับคู่ เซล – จังหวัด</h1><p class="sub">จีบนิ้วหยิบชื่อจังหวัด แล้วค้างบนเซลที่ดูแล</p>
@@ -69,7 +72,7 @@ function build(){const order=shuf(sales.map((_,i)=>i)),used=sales.map(()=>[]);Q=
  for(let k=0;k<N;k++){const o=order[k%order.length],pool=sales[o].prov.filter(p=>!used[o].includes(p));if(!pool.length)continue;
   const p=pool[Math.random()*pool.length|0];used[o].push(p);Q.push({p,o})}shuf(Q)}
 function start(){build();idx=score=ok=bad=0;holding=false;lock=false;t0=t1=Date.now();
- $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<div class="w"><img src="${s.img}" onerror="noimg(this)"><img class="t" src="${s.img}" onerror="noimg(this)" style="animation-delay:-${(i*.53).toFixed(2)}s;animation-duration:${(1.4+i%3*.25).toFixed(2)}s"></div>`:tile(s,i)}</div>`).join("");
+ $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<div class="w"><img src="${s.img}" onload="this.classList.add('l')" onerror="noimg(this)"><img class="t" src="${s.img}" onload="this.classList.add('l')" onerror="noimg(this)" style="animation-delay:-${(i*.37).toFixed(2)}s;animation-duration:${(0.9+i%3*.2).toFixed(2)}s"></div>`:tile(s,i)}</div>`).join("");
  faces=[...document.querySelectorAll(".f")];show(1);hud();next(true);clearInterval(tick);tick=setInterval(hud,500)}
 const tile=(s,i)=>`<b style="background:hsl(${i*40},55%,40%)">${esc(s.nick)}</b>`;
 function noimg(im){const f=im.closest(".f");if(!f)return;const i=+f.dataset.i;f.classList.add("n");f.innerHTML=tile(sales[i],i)}
