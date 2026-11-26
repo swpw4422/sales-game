@@ -36,9 +36,10 @@ body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
 #toast{position:fixed;left:12px;right:12px;bottom:20px;background:#000c;padding:10px;border-radius:12px;text-align:center;z-index:9;display:none}
 .alt{background:#ffffff26;color:#fff}
 #warn{display:none;background:#92400e;border-radius:14px;padding:12px;margin:0 0 12px;font-size:15px;line-height:1.4}#warn button{margin-top:8px;padding:10px;font-size:16px;background:#fff;color:#92400e}
-@keyframes sw{from{transform:translateX(-9px) scale(1.2)}to{transform:translateX(9px) scale(1.2)}}
+@keyframes sw{from{transform:skewX(-4.5deg)}to{transform:skewX(4.5deg)}}
 .f{transition:transform .45s,border-color .15s,background .15s}
-.f img{animation:sw 1.6s ease-in-out infinite alternate}
+.f .w{position:absolute;inset:0;transform:scale(1.15)}
+.f img.t{position:absolute;inset:0;transform-origin:50% 72%;-webkit-mask-image:linear-gradient(#000 50%,transparent 80%);mask-image:linear-gradient(#000 50%,transparent 80%);animation:sw 1.6s ease-in-out infinite alternate}
 #load{position:fixed;inset:0;background:#000d;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:19px;line-height:1.6}
 .sp{width:54px;height:54px;border:6px solid #fff4;border-top-color:#22c55e;border-radius:50%;animation:rot 1s linear infinite;margin-bottom:18px}@keyframes rot{to{transform:rotate(360deg)}}
 #pw{margin-top:10px;text-transform:none}
@@ -52,7 +53,7 @@ body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
 <div class="scr" id="s1"><div class="hud"><span id="sc">0</span><span id="pg"></span><span id="tm"></span></div><div id="grid"></div>
 <div id="zone"><div id="chip"></div></div></div>
 <div class="scr" id="s2"><h1 id="rt"></h1><p class="sub" id="rs"></p><b>🏆 อันดับสูงสุด</b><ol id="bd"></ol><button id="again">เล่นอีกครั้ง</button></div>
-<div class="scr" id="s3" style="justify-content:center"><h1>📖 กติกาการเล่น</h1><div class="rules"><p>✋ ยกมือให้เห็นในกล้อง แล้ว <b>จีบนิ้วโป้งกับนิ้วชี้</b> ที่ <b>ชื่อจังหวัด</b> เพื่อหยิบ</p><p>🎯 เลื่อนไป <b>ค้างไว้บนรูปเซล</b> ที่ดูแลจังหวัดนั้น จนวงกลมสีเหลืองวิ่งครบรอบ ถือว่าตอบ (ถ้ากางนิ้วก่อนครบ จังหวัดจะเด้งกลับ)</p><p>✅ ตอบถูก <b>+100</b> คะแนน บวกโบนัสความเร็ว (ยิ่งเร็วยิ่งได้มาก)<br>❌ ตอบผิด <b>−100</b> คะแนน และไม่มีโอกาสแก้</p><p>🔀 เซลสลับตำแหน่งและส่ายไปมาทุกข้อ รวม 10 ข้อ คะแนนเท่ากันใครเร็วกว่าอยู่สูงกว่า</p></div><button id="ok">เข้าสู่เกม</button></div>
+<div class="scr" id="s3" style="justify-content:center"><h1>📖 กติกาการเล่น</h1><div class="rules"><p>✋ ยกมือให้เห็นในกล้อง แล้ว <b>จีบนิ้วโป้งกับนิ้วชี้</b> ที่ <b>ชื่อจังหวัด</b> เพื่อหยิบ</p><p>🎯 เลื่อนไป <b>ค้างไว้บนรูปเซล</b> ที่ดูแลจังหวัดนั้น จนวงกลมสีเหลืองวิ่งครบรอบ ถือว่าตอบ (ถ้ากางนิ้วก่อนครบ จังหวัดจะเด้งกลับ)</p><p>✅ ตอบถูก <b>+100</b> คะแนน และ <b>คิดโบนัสความเร็วทุกข้อ</b> = (15 − เวลาที่ใช้ในข้อนั้นเป็นวินาที) × 4 สูงสุดราว +50 ถ้าใช้เวลาเกิน 15 วินาทีในข้อนั้น ไม่ได้โบนัส<br>❌ ตอบผิด <b>−100</b> คะแนน และไม่มีโอกาสแก้</p><p>🔀 เซลสลับตำแหน่งและส่ายไปมาทุกข้อ รวม 10 ข้อ คะแนนเท่ากันใครเร็วกว่าอยู่สูงกว่า</p></div><button id="ok">เข้าสู่เกม</button></div>
 </div>
 <script>
 const DEMO_S=[["พี่น้อย","กรุงเทพชั้นใน,นนทบุรี,ปทุมธานี,นครปฐม (อ.เมือง)"],["เต้ย","กรุงเทพรอบนอก,สมุทรสาคร,สมุทรปราการ"],["อาท","ชลบุรี,ระยอง,ตราด,กาญจนบุรี"],["เงาะ","เชียงใหม่,เชียงราย,ลำปาง,น่าน"],["เล็ก","พิษณุโลก,นครสวรรค์,อยุธยา"],["เอก","โคราช,ขอนแก่น,อุดรธานี"],["ศาล","อุบลราชธานี,สกลนคร,ร้อยเอ็ด"],["แดง","ภูเก็ต,กระบี่,สุราษฎร์ธานี"],["เกม","สงขลา,ตรัง,ยะลา"]];
@@ -68,10 +69,10 @@ function build(){const order=shuf(sales.map((_,i)=>i)),used=sales.map(()=>[]);Q=
  for(let k=0;k<N;k++){const o=order[k%order.length],pool=sales[o].prov.filter(p=>!used[o].includes(p));if(!pool.length)continue;
   const p=pool[Math.random()*pool.length|0];used[o].push(p);Q.push({p,o})}shuf(Q)}
 function start(){build();idx=score=ok=bad=0;holding=false;lock=false;t0=t1=Date.now();
- $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<img src="${s.img}" onerror="noimg(this)" style="animation-delay:-${(i*.53).toFixed(2)}s;animation-duration:${(1.4+i%3*.25).toFixed(2)}s">`:tile(s,i)}</div>`).join("");
+ $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<div class="w"><img src="${s.img}" onerror="noimg(this)"><img class="t" src="${s.img}" onerror="noimg(this)" style="animation-delay:-${(i*.53).toFixed(2)}s;animation-duration:${(1.4+i%3*.25).toFixed(2)}s"></div>`:tile(s,i)}</div>`).join("");
  faces=[...document.querySelectorAll(".f")];show(1);hud();next(true);clearInterval(tick);tick=setInterval(hud,500)}
 const tile=(s,i)=>`<b style="background:hsl(${i*40},55%,40%)">${esc(s.nick)}</b>`;
-function noimg(im){const f=im.parentNode,i=+f.dataset.i;f.classList.add("n");f.innerHTML=tile(sales[i],i)}
+function noimg(im){const f=im.closest(".f");if(!f)return;const i=+f.dataset.i;f.classList.add("n");f.innerHTML=tile(sales[i],i)}
 function hud(){$("#sc").textContent="⭐ "+score;$("#pg").textContent=Math.min(idx+1,Q.length)+"/"+Q.length;$("#tm").textContent="⏱ "+Math.round((Date.now()-t0)/1000)+" วิ"}
 function next(first){if(!first)idx++;if(idx>=Q.length)return end();t1=Date.now();faces.forEach(f=>f.className="f");if(!first)shuffleFaces();
  const c=$("#chip");c.style.transform="";c.textContent=Q[idx].p;hud()}
@@ -99,7 +100,7 @@ async function end(){clearInterval(tick);const sec=Math.round((Date.now()-t0)/10
   $("#bd").innerHTML=b.map((r,i)=>`<li><span>${i+1}. ${esc(r.nick)}</span><span>${r.score}</span></li>`).join("")||"<li>ยังไม่มีข้อมูล</li>"}
  catch(e){$("#bd").innerHTML="<li>บันทึกคะแนนไม่สำเร็จ</li>"}}
 // ---- โหมดกล้อง: ตรวจจับมือด้วย MediaPipe Hands ----
-let cam=false,lm=null,hands,busy=false,holding=false,wasPin=false,miss=0,gx=0,gy=0,rel=0,px=0,py=0,lostAt=0,dI=-1,dT=0,loops=0;const DWELL=1500;
+let cam=false,lm=null,hands,busy=false,holding=false,wasPin=false,miss=0,gx=0,gy=0,rel=0,px=0,py=0,lostAt=0,dI=-1,dT=0,loops=0;const DWELL=1300;
 const E=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
 function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",4500)}
 const lib=src=>new Promise((ok,no)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
