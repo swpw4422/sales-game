@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="th"><head><base target="_top"><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;font-family:system-ui,"Noto Sans Thai",sans-serif;background:#0b3d2e;color:#fff}
+#app{height:100%;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));max-width:520px;margin:auto}
+.scr{display:none;flex:1;flex-direction:column;min-height:0}.scr.on{display:flex}
+h1{font-size:26px;margin:8px 0;text-align:center}.sub{text-align:center;opacity:.8;margin:0 0 16px}
+input,button{font:inherit;border-radius:14px;border:0;padding:14px;width:100%}
+input{background:#fff;color:#111;text-align:center;font-size:20px;text-transform:uppercase}
+button{background:#22c55e;color:#06281c;font-weight:700;font-size:20px;margin-top:12px}
+#err{color:#fecaca;text-align:center;min-height:24px;margin-top:8px}
+.hud{display:flex;justify-content:space-between;font-weight:700;font-size:17px;padding:2px 4px 8px}
+#grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.f{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#14532d;border:3px solid transparent;transition:.15s}
+.f img,.f b{width:100%;height:100%;object-fit:cover;display:flex;align-items:center;justify-content:center}
+.f b{font-size:clamp(18px,6.8vw,30px);font-weight:800;text-align:center;line-height:1.1;padding:4px;text-shadow:0 2px 4px #0006}.f.n span{display:none}
+.f span{position:absolute;left:0;right:0;bottom:0;text-align:center;font-weight:700;font-size:15px;padding:12px 0 3px;background:linear-gradient(transparent,#000a)}
+.f.h{border-color:#facc15;transform:scale(1.05)}.f.hint{animation:p .7s infinite alternate}
+.f.ok{border-color:#22c55e;background:#22c55e}.f.no{border-color:#ef4444;animation:s .3s}
+@keyframes p{to{border-color:#facc15}}@keyframes s{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:0}
+#chip{touch-action:none;user-select:none;-webkit-user-select:none;background:#fff;color:#14532d;font-weight:800;font-size:clamp(22px,7vw,32px);padding:18px 26px;border-radius:999px;box-shadow:0 8px 20px #0006;text-align:center;max-width:100%;transition:transform .2s}
+#chip.d{transition:none;z-index:9}
+#hintTxt{opacity:.75;font-size:15px}
+ol{padding:0;margin:8px 0;list-style:none;overflow:auto}
+li{display:flex;justify-content:space-between;background:#ffffff1a;margin:4px 0;padding:8px 12px;border-radius:10px}
+#v{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:brightness(.6);display:none;z-index:0}
+#cv{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;display:none}
+body.cam #v,body.cam #cv{display:block}body.cam{background:#000}
+#app{position:relative;z-index:2}
+body.cam .scr:not(#s1){background:#0b3d2ee6;border-radius:18px;padding:10px}
+body.cam .hud,body.cam #hintTxt{text-shadow:0 1px 4px #000}
+#find{position:fixed;left:0;right:0;top:46%;text-align:center;font-weight:700;font-size:20px;text-shadow:0 2px 6px #000;z-index:6;display:none}
+#toast{position:fixed;left:12px;right:12px;bottom:20px;background:#000c;padding:10px;border-radius:12px;text-align:center;z-index:9;display:none}
+.alt{background:#ffffff26;color:#fff}
+#warn{display:none;background:#92400e;border-radius:14px;padding:12px;margin:0 0 12px;font-size:15px;line-height:1.4}#warn button{margin-top:8px;padding:10px;font-size:16px;background:#fff;color:#92400e}
+@keyframes sw{from{transform:translateX(-9px) scale(1.2)}to{transform:translateX(9px) scale(1.2)}}
+.f{transition:transform .45s,border-color .15s,background .15s}
+.f img{animation:sw 1.6s ease-in-out infinite alternate}
+#load{position:fixed;inset:0;background:#000d;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:19px;line-height:1.6}
+.sp{width:54px;height:54px;border:6px solid #fff4;border-top-color:#22c55e;border-radius:50%;animation:rot 1s linear infinite;margin-bottom:18px}@keyframes rot{to{transform:rotate(360deg)}}
+#pw{margin-top:10px;text-transform:none}
+#mt{position:fixed;right:10px;bottom:12px;z-index:7;width:46px;height:46px;border-radius:50%;padding:0;margin:0;font-size:22px;background:#0008;color:#fff;display:none}body.cam #mt{display:block}
+.rules{font-size:17px;line-height:1.6}.rules p{margin:8px 0}
+</style></head><body><video id="v" playsinline muted></video><canvas id="cv"></canvas><div id="find">🖐️ กำลังหามือของคุณ...</div><div id="toast"></div><div id="load"><div class="sp"></div>กรุณารอ 5–6 วินาที<br>กำลังเชื่อมต่อเซิร์ฟเวอร์<br>และกรุณากด <b>"อนุญาต"</b><br>ให้เข้าถึงกล้องในโทรศัพท์</div><button id="mt">🔊</button>
+<div id="app">
+<div class="scr on" id="s0" style="justify-content:center"><h1>🎯 จับคู่ เซล – จังหวัด</h1><p class="sub">จีบนิ้วหยิบชื่อจังหวัด แล้วค้างบนเซลที่ดูแล</p>
+<div id="warn">⚠️ ตอนนี้เปิดผ่านแอปอื่น (เช่น LINE) กล้องอาจใช้ไม่ได้<br>กรุณาเปิดผ่าน <b>Chrome</b> (Android) หรือ <b>Safari</b> (iPhone) โดยกดเมนู ⋮ หรือไอคอนแชร์ แล้วเลือก "เปิดด้วยเบราว์เซอร์" หรือกดคัดลอกลิงก์ด้านล่างไปวางในเบราว์เซอร์<button id="cp">📋 คัดลอกลิงก์</button></div>
+<input id="code" placeholder="รหัสผู้เล่น" autocomplete="off"><input id="pw" type="password" placeholder="รหัสผ่าน" autocomplete="current-password"><button id="goc">📷 เริ่มเกม (เปิดกล้อง)</button><div id="err"></div></div>
+<div class="scr" id="s1"><div class="hud"><span id="sc">0</span><span id="pg"></span><span id="tm"></span></div><div id="grid"></div>
+<div id="zone"><div id="chip"></div></div></div>
+<div class="scr" id="s2"><h1 id="rt"></h1><p class="sub" id="rs"></p><b>🏆 อันดับสูงสุด</b><ol id="bd"></ol><button id="again">เล่นอีกครั้ง</button></div>
+<div class="scr" id="s3" style="justify-content:center"><h1>📖 กติกาการเล่น</h1><div class="rules"><p>✋ ยกมือให้เห็นในกล้อง แล้ว <b>จีบนิ้วโป้งกับนิ้วชี้</b> ที่ <b>ชื่อจังหวัด</b> เพื่อหยิบ</p><p>🎯 เลื่อนไป <b>ค้างไว้บนรูปเซล</b> ที่ดูแลจังหวัดนั้น จนวงกลมสีเหลืองวิ่งครบรอบ ถือว่าตอบ (ถ้ากางนิ้วก่อนครบ จังหวัดจะเด้งกลับ)</p><p>✅ ตอบถูก <b>+100</b> คะแนน บวกโบนัสความเร็ว (ยิ่งเร็วยิ่งได้มาก)<br>❌ ตอบผิด <b>−100</b> คะแนน และไม่มีโอกาสแก้</p><p>🔀 เซลสลับตำแหน่งและส่ายไปมาทุกข้อ รวม 10 ข้อ คะแนนเท่ากันใครเร็วกว่าอยู่สูงกว่า</p></div><button id="ok">เข้าสู่เกม</button></div>
+</div>
+<script>
+const DEMO_S=[["พี่น้อย","กรุงเทพชั้นใน,นนทบุรี,ปทุมธานี,นครปฐม (อ.เมือง)"],["เต้ย","กรุงเทพรอบนอก,สมุทรสาคร,สมุทรปราการ"],["อาท","ชลบุรี,ระยอง,ตราด,กาญจนบุรี"],["เงาะ","เชียงใหม่,เชียงราย,ลำปาง,น่าน"],["เล็ก","พิษณุโลก,นครสวรรค์,อยุธยา"],["เอก","โคราช,ขอนแก่น,อุดรธานี"],["ศาล","อุบลราชธานี,สกลนคร,ร้อยเอ็ด"],["แดง","ภูเก็ต,กระบี่,สุราษฎร์ธานี"],["เกม","สงขลา,ตรัง,ยะลา"]];
+const DEMO={getSales:()=>DEMO_S.map(s=>({nick:s[0],prov:s[1].split(","),img:""})),login:(c,p)=>c?{code:c,nick:c,token:"x"}:null,saveScore:()=>true,getBoard:()=>[]};
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>"&#"+c.charCodeAt(0)+";");
+const gs=window.google&&google.script&&google.script.run;
+const API="https://script.google.com/macros/s/AKfycby1dxK2D46C0Vu9bJMCnJkpj5wzQbJPZSqo697Z2RLmHXvlzHesECITHhoM9OQWYvdF/exec";// ถ้าโฮสต์หน้านี้นอก Apps Script ให้วาง URL เว็บแอป (ลงท้าย /exec) ในเครื่องหมายคำพูด
+const call=(fn,...a)=>new Promise((ok,no)=>{if(gs)gs.withSuccessHandler(ok).withFailureHandler(no)[fn](...a);else if(API)(fn=="login"||fn=="saveScore"?fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args:a})}):fetch(API+"?fn="+fn+"&args="+encodeURIComponent(JSON.stringify(a)))).then(r=>r.json()).then(ok,no);else ok(DEMO[fn](...a))});
+const show=n=>document.querySelectorAll(".scr").forEach((e,i)=>e.classList.toggle("on",i==n));
+const N=10;let sales=[],me,Q,idx,score,ok,bad,t0,t1,tick,faces=[],lock=false;
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function build(){const order=shuf(sales.map((_,i)=>i)),used=sales.map(()=>[]);Q=[];
+ for(let k=0;k<N;k++){const o=order[k%order.length],pool=sales[o].prov.filter(p=>!used[o].includes(p));if(!pool.length)continue;
+  const p=pool[Math.random()*pool.length|0];used[o].push(p);Q.push({p,o})}shuf(Q)}
+function start(){build();idx=score=ok=bad=0;holding=false;lock=false;t0=t1=Date.now();
+ $("#grid").innerHTML=sales.map((s,i)=>`<div class="f${s.img?"":" n"}" data-i="${i}">${s.img?`<img src="${s.img}" onerror="noimg(this)" style="animation-delay:-${(i*.53).toFixed(2)}s;animation-duration:${(1.4+i%3*.25).toFixed(2)}s">`:tile(s,i)}</div>`).join("");
+ faces=[...document.querySelectorAll(".f")];show(1);hud();next(true);clearInterval(tick);tick=setInterval(hud,500)}
+const tile=(s,i)=>`<b style="background:hsl(${i*40},55%,40%)">${esc(s.nick)}</b>`;
+function noimg(im){const f=im.parentNode,i=+f.dataset.i;f.classList.add("n");f.innerHTML=tile(sales[i],i)}
+function hud(){$("#sc").textContent="⭐ "+score;$("#pg").textContent=Math.min(idx+1,Q.length)+"/"+Q.length;$("#tm").textContent="⏱ "+Math.round((Date.now()-t0)/1000)+" วิ"}
+function next(first){if(!first)idx++;if(idx>=Q.length)return end();t1=Date.now();faces.forEach(f=>f.className="f");if(!first)shuffleFaces();
+ const c=$("#chip");c.style.transform="";c.textContent=Q[idx].p;hud()}
+function hit(e){return faces.findIndex(f=>{const r=f.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom})}
+const chip=$("#chip");
+let AC,mute=false;
+function unlock(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume();speechSynthesis.speak(new SpeechSynthesisUtterance(""))}catch(e){}}
+function clap(t){const n=AC.sampleRate*.05|0,b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);
+ const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();f.type="bandpass";f.frequency.value=1800;g.gain.value=.9;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start(t)}
+function sfx(good){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume();const t=AC.currentTime;
+ if(good){for(let k=0;k<6;k++)clap(t+k*.09+Math.random()*.03)}
+ else{const o=AC.createOscillator(),g=AC.createGain();o.type="sawtooth";o.frequency.setValueAtTime(500,t);o.frequency.exponentialRampToValueAtTime(110,t+.45);g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.5);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.5)}
+ const u=new SpeechSynthesisUtterance(good?"Yes!":"No!");u.lang="en-US";u.rate=1.1;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function shuffleFaces(){const old=faces.map(f=>f.getBoundingClientRect());shuf(faces.map((_,i)=>i)).forEach((p,k)=>faces[p].style.order=k);
+ faces.forEach((f,i)=>{const n=f.getBoundingClientRect();f.style.transition="none";f.style.transform=`translate(${old[i].left-n.left}px,${old[i].top-n.top}px)`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition="transform .45s,border-color .15s,background .15s";f.style.transform=""}))})}
+// คำตอบสิ้นสุดเมื่อวงกลมครบเท่านั้น ถูก +100 + โบนัสความเร็ว ผิด −100 ไม่มีโอกาสแก้
+function answer(i){drop();lock=true;const q=Q[idx],good=i==q.o;
+ if(good){const sec=(Date.now()-t1)/1000;score+=100+Math.max(0,Math.round((15-sec)*4));ok++;faces[i].classList.add("ok")}
+ else{bad++;score-=100;faces[i].classList.add("no");faces[q.o].classList.add("ok")}
+ sfx(good);hud();setTimeout(()=>{lock=false;next()},good?700:1200)}
+async function end(){clearInterval(tick);const sec=Math.round((Date.now()-t0)/1000);show(2);
+ $("#rt").textContent="🎉 คุณทำได้ "+score+" คะแนน";$("#rs").innerHTML=`ตอบถูก ${ok} ข้อ ผิด ${bad} ข้อ จาก ${Q.length} ข้อ ใช้เวลา ${sec} วินาที<br>คะแนน = ถูกข้อละ 100 + โบนัสความเร็ว / ผิดข้อละ −100`;$("#bd").innerHTML="<li>กำลังบันทึก...</li>";
+ try{await call("saveScore",{token:me.token,score,sec,ok,bad});const b=await call("getBoard");
+  $("#bd").innerHTML=b.map((r,i)=>`<li><span>${i+1}. ${esc(r.nick)}</span><span>${r.score}</span></li>`).join("")||"<li>ยังไม่มีข้อมูล</li>"}
+ catch(e){$("#bd").innerHTML="<li>บันทึกคะแนนไม่สำเร็จ</li>"}}
+// ---- โหมดกล้อง: ตรวจจับมือด้วย MediaPipe Hands ----
+let cam=false,lm=null,hands,busy=false,holding=false,wasPin=false,miss=0,gx=0,gy=0,rel=0,px=0,py=0,lostAt=0,dI=-1,dT=0,loops=0;const DWELL=1500;
+const E=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",4500)}
+const lib=src=>new Promise((ok,no)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
+async function startCam(){if(cam)return;
+ try{const v=$("#v");v.srcObject=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:640,height:480},audio:false});await v.play();
+  const B="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/";if(!window.Hands)await lib(B+"hands.js");
+  if(!hands){hands=new Hands({locateFile:f=>B+f});hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.6,minTrackingConfidence:.5});
+  hands.onResults(r=>{lm=(r.multiHandLandmarks&&r.multiHandLandmarks[0])||null});await hands.initialize()}
+  cam=true;document.body.classList.add("cam");if(!loops){loops=1;feed();draw()}}
+ catch(e){try{$("#v").srcObject.getTracks().forEach(t=>t.stop())}catch(_){}toast("เปิดกล้องไม่ได้ ("+((e&&e.name)||"โหลดตัวตรวจจับมือไม่สำเร็จ")+")")}}
+function stopCam(){cam=false;lm=null;try{$("#v").srcObject.getTracks().forEach(t=>t.stop())}catch(_){}document.body.classList.remove("cam")}
+async function feed(){const v=$("#v");if(cam&&v.readyState>=2&&!busy){busy=true;try{await hands.send({image:v})}catch(e){}busy=false}requestAnimationFrame(feed)}
+function map(p){const v=$("#v"),W=innerWidth,H=innerHeight,s=Math.max(W/v.videoWidth,H/v.videoHeight);
+ return{x:(W-v.videoWidth*s)/2+(1-p.x)*v.videoWidth*s,y:(H-v.videoHeight*s)/2+p.y*v.videoHeight*s}} // กลับซ้าย-ขวาให้ตรงกับภาพกระจก
+function handle(pin,x,y){const r=chip.getBoundingClientRect();
+ if(pin&&!wasPin){if(!holding&&!lock&&x>r.left-30&&x<r.right+30&&y>r.top-30&&y<r.bottom+30){holding=true;gx=r.left+r.width/2;gy=r.top+r.height/2;dI=-1;chip.classList.add("d")}else miss=Date.now()+400}
+ if(!holding)return;
+ if(pin){rel=0;px=x;py=y;chip.style.transform=`translate(${x-gx}px,${y-gy}px) scale(1.08)`;const h=hit({clientX:x,clientY:y});faces.forEach((f,i)=>f.classList.toggle("h",i==h));if(h!=dI){dI=h;dT=Date.now()}else if(h>=0&&Date.now()-dT>=DWELL)answer(h)}
+ else if(++rel>=2)drop()}
+function drop(){holding=false;rel=0;dI=-1;chip.classList.remove("d");faces.forEach(f=>f.classList.remove("h"));chip.style.transform=""}
+function cursor(g,x,y){const r=chip.getBoundingClientRect(),over=x>r.left&&x<r.right&&y>r.top&&y<r.bottom;
+ let col="#38bdf8",dash=[];if(holding)col="#22c55e";else if(Date.now()<miss)col="#ef4444";else if(over){col="#facc15";dash=[5,4]}
+ g.setLineDash(dash);g.strokeStyle=col;g.lineWidth=4;g.beginPath();g.arc(x,y,20,0,7);g.stroke();g.setLineDash([]);
+ if(holding){g.fillStyle=col;g.font="22px sans-serif";g.fillText("✔",x-10,y-28);if(dI>=0){g.strokeStyle="#facc15";g.lineWidth=7;g.beginPath();g.arc(x,y,31,-Math.PI/2,-Math.PI/2+Math.min(1,(Date.now()-dT)/DWELL)*2*Math.PI);g.stroke()}}}
+function draw(){const c=$("#cv"),W=innerWidth,H=innerHeight,d=devicePixelRatio||1;if(c.width!=Math.round(W*d)){c.width=Math.round(W*d);c.height=Math.round(H*d)}
+ const g=c.getContext("2d");g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,W,H);
+ const on=$("#s1").classList.contains("on");$("#find").style.display=(cam&&on&&!lm)?"block":"none";
+ if(lm){const P=lm.map(map);g.strokeStyle="#4ade80";g.lineWidth=3;
+  E.forEach(([a,b])=>{g.beginPath();g.moveTo(P[a].x,P[a].y);g.lineTo(P[b].x,P[b].y);g.stroke()});
+  g.fillStyle="#fff";P.forEach(p=>{g.beginPath();g.arc(p.x,p.y,4,0,7);g.fill()});
+  const t=P[4],i=P[8],ref=Math.max(Math.hypot(P[0].x-P[9].x,P[0].y-P[9].y),Math.hypot(P[5].x-P[17].x,P[5].y-P[17].y))||1,dist=Math.hypot(t.x-i.x,t.y-i.y)/ref;lostAt=0; // พีทาโกรัส ปรับตามขนาดมือ
+  const pin=wasPin?dist<.42:dist<.3,x=pin?(t.x+i.x)/2:i.x,y=pin?(t.y+i.y)/2:i.y;
+  if(on)handle(pin,x,y);cursor(g,x,y);wasPin=pin}
+ else{if(holding){if(!lostAt)lostAt=Date.now();if(Date.now()-lostAt>350)drop()}wasPin=false}
+ requestAnimationFrame(draw)}
+async function enter(){$("#err").textContent="";const c=$("#code").value.trim(),p=$("#pw").value;
+ if(!c||!p)return $("#err").textContent="กรุณากรอกรหัสผู้เล่นและรหัสผ่าน";
+ unlock();$("#load").style.display="flex";
+ try{const [r,sl]=await Promise.all([call("login",c,p),call("getSales"),startCam()]);$("#load").style.display="none";
+  if(!r||r.locked){stopCam();return $("#err").textContent=r&&r.locked?"ใส่รหัสผิดหลายครั้ง กรุณารอ 5 นาทีแล้วลองใหม่":"รหัสผู้เล่นหรือรหัสผ่านไม่ถูกต้อง"}
+  if(!cam)return $("#err").textContent="เปิดกล้องไม่ได้ เกมนี้ต้องใช้กล้อง กรุณาเปิดลิงก์ผ่าน Chrome (Android) หรือ Safari (iPhone) แล้วกดอนุญาตกล้อง";
+  if(!sl||sl.length<2)return $("#err").textContent="ไม่พบข้อมูลเซลในชีท Sales_Data";
+  me=r;sales=sl;show(3)}
+ catch(e){$("#load").style.display="none";stopCam();$("#err").textContent="เชื่อมต่อไม่สำเร็จ ลองใหม่"}}
+$("#goc").onclick=enter;$("#ok").onclick=start;$("#pw").onkeydown=e=>{if(e.key=="Enter")enter()};
+$("#mt").onclick=()=>{mute=!mute;$("#mt").textContent=mute?"🔇":"🔊"};
+// ตรวจว่าเปิดผ่านแอป (LINE ฯลฯ) ซึ่งมักบล็อกกล้อง
+const UA=navigator.userAgent,base=location.origin+location.pathname;
+if(/Line\//i.test(UA)&&!/openExternalBrowser=1/.test(location.search))location.replace(base+"?openExternalBrowser=1");
+if(/Line\/|FBAN|FBAV|Instagram|MicroMessenger|; wv\)/i.test(UA))$("#warn").style.display="block";
+$("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(base);toast("คัดลอกลิงก์แล้ว นำไปวางใน Chrome หรือ Safari")}catch(e){prompt("คัดลอกลิงก์นี้ไปเปิดใน Chrome หรือ Safari",base)}};
+$("#again").onclick=start;
+</script></body></html>
